@@ -1,0 +1,54 @@
+{
+  "name": "sun-builder",
+  "version": "1.0.0",
+  "description": "Create jpegs with data about sunrise/sunset",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "build2": "npm run clean && npm run cppure && tsc",
+    "cppure": "cp src/pureimage-umd.cjs node_modules/pureimage/dist/pureimage-umd.cjs",
+    "clean": "shx rm -rf build/*",
+    "test": "npm run build && node app.js",
+    "start": "npm run build && node app.js",
+    "prepare": "npm run build",
+    "publish": "echo Published.",
+    "install": "echo Installed.",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "dotenv": "^16.4.5",
+    "jpeg-js": "^0.4.4",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
+    "pureimage": "^0.4.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
+    "np": "^10.0.5",
+    "prettier": "^3.2.5",
+    "shx": "^0.3.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kfaubel/sun-builder.git"
+  },
+  "author": "Ken Faubel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kfaubel/sun-builder/issues"
+  },
+  "homepage": "https://github.com/kfaubel/sun-builder#readme",
+  "files": [
+    "build/**/*",
+    "fonts/**/*",
+    "index.js",
+    "index.d.ts"
+  ]
+}
