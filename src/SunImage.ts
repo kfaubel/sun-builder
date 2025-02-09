@@ -109,40 +109,30 @@ export class SunImage {
         const centerX                  = imageWidth/2;
         const centerY                  = imageHeight/2 + 40;     // leave some extra room at the top for the title
         const sunCircleRadius          = 380; //imageHeight/3;          //360
-        const moonCircleRadius         = 300; //imageHeight/4;          //270
-        const sunArcWidth              = 40;
-        const moonArcWidth             = 33;
-        const sunRadius                = 50;                     // The actual sun drawn on the circle
-        const moonRadius               = 35;
+        const sunArcWidth              = 70;
+        const sunRadius                = 70;                     // The actual sun drawn on the circle
 
         const backgroundColor          = "#FFFFFA";              // format needed by myFillRect
         const circleColor              = "#B0B0B0";
         const timeLabelColor           = "#B0B0B0"; 
         const tickColor                = "#B0B0B0";
         const sunCircleColor           = "#504773"; //"#303050";
-        const sunArcColor              = "#FCD303";
-        const sunUpColor               = "#FDF000";
+        const sunArcColor              = "#E0D000"; // "#FCD303";
+        const sunUpColor               = "#FFE000";
         const sunDownColor             = "#D1AF02";
-        const sunTwilightArcColor1     = "#F0E000";
-        const sunTwilightArcColor2     = "#B80010";
-        const sunTwilightArcColor3     = "#7a2100"; //"#500028";
         const solidTwilightArcColor    = "#d45b0b";
-        const moonArcColor             = "#D0D0D0";
-        const moonUpColor              = "#707070";
-        const moonDownColor            = "#808080";
-        const moonLabelColor           = "#707070";
         const titleColor               = "#2020F0"; 
         const labelColor               = "#2020F0";
         
         // Approximation of the height of a capital letter
         const largeFontCharHeight       = 54;
         const mediumFontCharHeight      = 40;
-        const smallFontCharHeight       = 30;
+        const smallFontCharHeight       = 50;
         const xsmallFontCharHeight      = 22;
 
         const largeFont                 = "72px 'OpenSans-Bold'";     // Title
         const mediumFont                = "48px 'OpenSans-Regular";   // Other text
-        const smallFont                 = "40px 'OpenSans-Regular'";  // Note at the bottom
+        const smallFont                 = "50px 'OpenSans-Regular'";  // Note at the bottom
         const extraSmallFont            = "30px 'OpenSans-Regular'";  // Note at the bottom
 
         // When used as an npm package, fonts need to be installed in the top level of the main project
@@ -386,39 +376,10 @@ export class SunImage {
         ctx.fill();
 
         ctx.rotate(-this.getRenderAngle(currentTimeAngle));
-        ctx.restore();
-
-        // // Draw the moon.  Draw a background cicle to clear the arc, draw an outline circle, draw the fill in a different color if visible
-        // // Draw the sun on the arc
-        // // Translate
-        // ctx.save();
-        // ctx.translate(centerX, centerY);            // Set the origin to the center
-        // ctx.rotate(this.getRenderAngle(currentTimeAngle));               // Rotate our reference so the current time is on the X axis
-
-        // ctx.beginPath();
-        // ctx.fillStyle = backgroundColor;
-        // ctx.arc(moonCircleRadius, 0, moonRadius + 5, 0, 2 * Math.PI);  // Draw a circle with the background color to clear the arc we drew above
-        // ctx.fill();
-        
-        // ctx.beginPath();
-        // ctx.fillStyle = moonDownColor;
-        // ctx.arc(moonCircleRadius, 0, moonRadius, 0, 2 * Math.PI);  // Now draw the moon itself, this may just be an outline after the next draw
-        // ctx.fill();
-        
-        // ctx.beginPath();
-        // ctx.fillStyle = (currentTimeAngle > moonriseAngle && currentTimeAngle < moonsetAngle) ? moonUpColor : moonDownColor;
-        // ctx.arc(moonCircleRadius, 0, moonRadius - 2, 0, 2 * Math.PI);  // Now draw the moon itself
-        // ctx.fill();
-
-        // ctx.rotate(-this.getRenderAngle(currentTimeAngle));
-        // ctx.restore();
-        
-        
+        ctx.restore();        
 
         // Draw the labels for sunrise, sunset, first light, last light
-        ctx.font = smallFont;
-        ctx.fillStyle = labelColor;
-
+        
         // +---------+--------+
         // | slot 0  | slot 4 |
         // | slot 1  | slot 5 |
@@ -441,7 +402,7 @@ export class SunImage {
             {x: 1350, y: 920}
         ];
 
-        const labelSlots: Array<Point> = [ 
+        const labelSlotsOrig2: Array<Point> = [ 
             {x: 420, y: 350},
             {x: 370, y: 470},
             {x: 370, y: 680},
@@ -451,6 +412,18 @@ export class SunImage {
             {x: 1520, y: 680},
             {x: 1470, y: 800},
             {x: 1420, y: 920}
+        ];
+
+        const labelSlots: Array<Point> = [ 
+            {x: 400, y: 330},
+            {x: 350, y: 450},
+            {x: 350, y: 700},
+            {x: 400, y: 820},
+            {x: 1490, y: 330},
+            {x: 1540, y: 450},
+            {x: 1540, y: 700},
+            {x: 1490, y: 820},
+            {x: 1440, y: 940}
         ];
 
         // sunriseAngle is 0-360.  0 is midnight, 180 is noon...
@@ -491,21 +464,24 @@ export class SunImage {
             pmTwilightXY = labelSlots[8];
         }
 
-        ctx.centerText("Sunrise",                                    sunriseXY.x, sunriseXY.y); 
+        ctx.font = smallFont;
+        ctx.fillStyle = labelColor;
+
+        ctx.centerText("Sunrise",                                sunriseXY.x, sunriseXY.y); 
         ctx.centerText(`${this.formatTime(SunJson.sunrise)}`,    sunriseXY.x, sunriseXY.y + 50);
-        ctx.centerText("Sunset " ,                                   sunsetXY.x,  sunsetXY.y);
+        ctx.centerText("Sunset " ,                               sunsetXY.x,  sunsetXY.y);
         ctx.centerText(`${this.formatTime(SunJson.sunset)}` ,    sunsetXY.x,  sunsetXY.y + 50);
 
-        ctx.centerText("First light",                                amTwilightXY.x, amTwilightXY.y);
+        ctx.centerText("First light",                            amTwilightXY.x, amTwilightXY.y);
         ctx.centerText(`${this.formatTime(SunJson.firstLight)}`, amTwilightXY.x, amTwilightXY.y + 50);
-        ctx.centerText("Last light" ,                                pmTwilightXY.x, pmTwilightXY.y);
+        ctx.centerText("Last light" ,                            pmTwilightXY.x, pmTwilightXY.y);
         ctx.centerText(`${this.formatTime(SunJson.lastLight)}` , pmTwilightXY.x, pmTwilightXY.y + 50);
 
-        ctx.font = mediumFont;
-        ctx.fillStyle = moonLabelColor;
-        ctx.centerText("Moon",                                                                                centerX, centerY - 40);
-        ctx.centerText(SunJson.lunarPhase,                                                                centerX, centerY + 20);
-        ctx.centerText(SunJson.lunarIllumination + (SunJson.lunarWaxWane === "waxing" ? " +" : " -"), centerX, centerY + 80);
+        // ctx.font = mediumFont;
+        // ctx.fillStyle = moonLabelColor;
+        // ctx.centerText("Moon",                                                                                centerX, centerY - 40);
+        // ctx.centerText(SunJson.lunarPhase,                                                                centerX, centerY + 20);
+        // ctx.centerText(SunJson.lunarIllumination + (SunJson.lunarWaxWane === "waxing" ? " +" : " -"), centerX, centerY + 80);
 
         // Draw the date in the lower right
         ctx.fillStyle = titleColor;
