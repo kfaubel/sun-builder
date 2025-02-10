@@ -1,6 +1,6 @@
 {
   "name": "sun-builder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create jpegs with data about sunrise/sunset",
   "main": "index.js",
   "types": "index.d.ts",

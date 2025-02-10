@@ -6,7 +6,8 @@ import * as pure from "pureimage";
 import { SunData, SunJson } from "./SunData";
 import { LoggerInterface } from "./Logger";
 import { KacheInterface} from "./Kache";
-import { relativeTimeThreshold } from "moment";
+
+import moment from "moment-timezone";  // https://momentjs.com/timezone/docs/ &  https://momentjs.com/docs/
 
 export interface ImageResult {
     imageType: string;
@@ -98,9 +99,10 @@ export class SunImage {
         const twilightDegrees          = 24;     // 24 degrees before sunrise and 24 degrees after sunset
         const twilightMinutes          = 24 * 4; // 4 minutes per degree (96 minutes)
 
-        const dataDate        = new Date(SunJson.date + "T00:00:00"); // Without the explicit time, Date.Parse assume this is UTC and the day is off by 1.
         const title           = `Sunrise and Sunset for ${location}`;
-        const dateDisplayStr  = `${dataDate.toLocaleString()}`;
+
+        const now: moment.Moment = moment();
+        const dateDisplayStr = now.tz(timeZone).format("MMM D, YYYY, h:mm A");
 
         // Define layout constants
         const imageHeight              = 1080; 
@@ -125,15 +127,15 @@ export class SunImage {
         const labelColor               = "#2020F0";
         
         // Approximation of the height of a capital letter
-        const largeFontCharHeight       = 54;
-        const mediumFontCharHeight      = 40;
-        const smallFontCharHeight       = 50;
+        const largeFontCharHeight       = 72;
+        const mediumFontCharHeight      = 60;
+        const smallFontCharHeight       = 40;
         const xsmallFontCharHeight      = 22;
 
         const largeFont                 = "72px 'OpenSans-Bold'";     // Title
-        const mediumFont                = "48px 'OpenSans-Regular";   // Other text
-        const smallFont                 = "50px 'OpenSans-Regular'";  // Note at the bottom
-        const extraSmallFont            = "30px 'OpenSans-Regular'";  // Note at the bottom
+        const mediumFont                = "60px 'OpenSans-Regular";   // Other text
+        const smallFont                 = "40px 'OpenSans-Regular'";  // Note at the bottom
+        const extraSmallFont            = "22px 'OpenSans-Regular'";  // Note at the bottom
 
         // When used as an npm package, fonts need to be installed in the top level of the main project
         const fntBold     = pure.registerFont(path.join(".", "fonts", "OpenSans-Bold.ttf"),"OpenSans-Bold");
@@ -145,18 +147,6 @@ export class SunImage {
         fntRegular2.loadSync();
 
         const titleY                    = 90; // down from the top of the image
-
-        const moonValuesSpacingY        = 60;
-        
-        const moonLabelX                = centerX - 180;
-        const moonValueX                = centerX - 40;
-
-        const moonHeaderY               = centerY - 140;
-        const moonriseLabelY            = centerY - 60;
-        const moonsetLabelY             = moonriseLabelY + moonValuesSpacingY;
-        const moonAgeLabelY             = moonriseLabelY + moonValuesSpacingY * 2;
-        const moonPhaseLabelY           = moonriseLabelY + moonValuesSpacingY * 3;
-
         const dateX                     = imageWidth * 11/16;
         const dateY                     = imageHeight - 20;
 
@@ -201,8 +191,8 @@ export class SunImage {
         for (let i = 0; i < 360; i += 90) {
             ctx.rotate(90 * Math.PI/180);
             ctx.beginPath();
-            ctx.moveTo(sunCircleRadius - 30, 0);
-            ctx.lineTo(sunCircleRadius + 30, 0);
+            ctx.moveTo(sunCircleRadius - 40, 0);
+            ctx.lineTo(sunCircleRadius + 45, 0);
             ctx.stroke();
         }
 
@@ -286,7 +276,7 @@ export class SunImage {
         ctx.rotate(this.getRenderAngle(sunriseAngle));
         ctx.beginPath();
         ctx.moveTo(sunCircleRadius - 50, 0);
-        ctx.lineTo(sunCircleRadius + 50, 0);
+        ctx.lineTo(sunCircleRadius + 80, 0);
         ctx.stroke();
         ctx.rotate(-this.getRenderAngle(sunriseAngle));
         ctx.restore();
@@ -299,7 +289,7 @@ export class SunImage {
         ctx.rotate(this.getRenderAngle(amTwilightAngle));
         ctx.beginPath();
         ctx.moveTo(sunCircleRadius - 50, 0);
-        ctx.lineTo(sunCircleRadius + 50, 0);
+        ctx.lineTo(sunCircleRadius + 80, 0);
         ctx.stroke();
         ctx.rotate(-this.getRenderAngle(amTwilightAngle));
         ctx.restore();
@@ -331,7 +321,7 @@ export class SunImage {
         ctx.rotate(this.getRenderAngle(sunsetAngle));
         ctx.beginPath();
         ctx.moveTo(sunCircleRadius - 50, 0);
-        ctx.lineTo(sunCircleRadius + 50, 0);
+        ctx.lineTo(sunCircleRadius + 80, 0);
         ctx.stroke();
         ctx.rotate(-this.getRenderAngle(sunsetAngle));
         ctx.translate(-centerX, -centerY);
@@ -345,7 +335,7 @@ export class SunImage {
         ctx.rotate(this.getRenderAngle(pmTwilightAngle));
         ctx.beginPath();
         ctx.moveTo(sunCircleRadius - 50, 0);
-        ctx.lineTo(sunCircleRadius + 50, 0);
+        ctx.lineTo(sunCircleRadius + 80, 0);
         ctx.stroke();
         ctx.rotate(-this.getRenderAngle(pmTwilightAngle));
         ctx.translate(-centerX, -centerY);
@@ -464,18 +454,18 @@ export class SunImage {
             pmTwilightXY = labelSlots[8];
         }
 
-        ctx.font = smallFont;
+        ctx.font = mediumFont;
         ctx.fillStyle = labelColor;
 
         ctx.centerText("Sunrise",                                sunriseXY.x, sunriseXY.y); 
-        ctx.centerText(`${this.formatTime(SunJson.sunrise)}`,    sunriseXY.x, sunriseXY.y + 50);
+        ctx.centerText(`${this.formatTime(SunJson.sunrise)}`,    sunriseXY.x, sunriseXY.y + mediumFontCharHeight);
         ctx.centerText("Sunset " ,                               sunsetXY.x,  sunsetXY.y);
-        ctx.centerText(`${this.formatTime(SunJson.sunset)}` ,    sunsetXY.x,  sunsetXY.y + 50);
+        ctx.centerText(`${this.formatTime(SunJson.sunset)}` ,    sunsetXY.x,  sunsetXY.y + mediumFontCharHeight);
 
         ctx.centerText("First light",                            amTwilightXY.x, amTwilightXY.y);
-        ctx.centerText(`${this.formatTime(SunJson.firstLight)}`, amTwilightXY.x, amTwilightXY.y + 50);
+        ctx.centerText(`${this.formatTime(SunJson.firstLight)}`, amTwilightXY.x, amTwilightXY.y + mediumFontCharHeight);
         ctx.centerText("Last light" ,                            pmTwilightXY.x, pmTwilightXY.y);
-        ctx.centerText(`${this.formatTime(SunJson.lastLight)}` , pmTwilightXY.x, pmTwilightXY.y + 50);
+        ctx.centerText(`${this.formatTime(SunJson.lastLight)}` , pmTwilightXY.x, pmTwilightXY.y + mediumFontCharHeight);
 
         // ctx.font = mediumFont;
         // ctx.fillStyle = moonLabelColor;
@@ -485,6 +475,7 @@ export class SunImage {
 
         // Draw the date in the lower right
         ctx.fillStyle = titleColor;
+        ctx.font = smallFont;
         ctx.fillText(dateDisplayStr, dateX, dateY);
 
         const jpegImg = jpeg.encode(img, 80);
